@@ -1,5 +1,5 @@
 - name: Prepare environment
-  hosts: all
+  hosts: linux_servers
   become: yes
 
   tasks:
@@ -37,9 +37,9 @@
 
       - name: Установка Docker Compose
         get_url:
-            url: "https://github.com/docker/compose/releases/download/{{ compose_version.stdout }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+            url: 'https://github.com/docker/compose/releases/download/{{ compose_version.stdout }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}'
             dest: /usr/local/bin/docker-compose
-            mode: "u+x"
+            mode: 'u+x'
         when: compose_installed.rc != 0
 
       - name: Удаление директории DevOps, если она существует
@@ -49,5 +49,5 @@
 
       - name: Клонирование репозитория DevOps
         git:
-            repo: "https://github.com/vvadev/devops-lr.git"
+            repo: 'https://github.com/vvadev/devops-lr.git'
             dest: "{{ lookup('env', 'WORKSPACE') }}/DevOps"
