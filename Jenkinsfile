@@ -12,6 +12,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Install Ansible') {
+            steps {
+                echo 'Installing Ansible...'
+
+                sh '''
+                  if ! [ -x "$(command -v ansible)" ]; then
+                    if [ "$(uname)" == "Darwin" ]; then
+                      brew install ansible
+                    else
+                      sudo apt update
+                      sudo apt install -y ansible
+                    fi
+                  fi
+                '''
+            }
+        }
+
         stage('Подготовка окружения') {
             steps {
                 script {
