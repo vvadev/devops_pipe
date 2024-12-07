@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        ANSIBLE_HOST_KEY_CHECKING = "False"
+    }
 
     stages {
         stage('Подготовка окружения') {
