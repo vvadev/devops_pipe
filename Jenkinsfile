@@ -5,6 +5,13 @@ pipeline {
     }
 
     stages {
+        stage('ls') {
+            steps {
+                script {
+                    sh 'ls'
+                }
+            }
+        }
         stage('Подготовка окружения') {
             steps {
                 script {
