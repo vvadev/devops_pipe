@@ -1,0 +1,53 @@
+- name: Prepare environment
+  hosts: linux_servers
+  become: yes
+
+  tasks:
+      - name: Проверка установки Docker
+        command: docker --version
+        register: docker_installed
+        ignore_errors: yes
+
+      - name: Вывод версии Docker
+        debug:
+            var: docker_installed.stdout
+        when: docker_installed.rc == 0
+
+      - name: Установка Docker, если он не установлен
+        apt:
+            name: docker.io
+            state: latest
+            update_cache: yes
+        when: docker_installed.rc != 0
+
+      - name: Проверка установки Docker Compose
+        command: docker-compose --version
+        register: compose_installed
+        ignore_errors: yes
+
+      - name: Вывод версии Docker Compose
+        debug:
+            var: compose_installed.stdout
+        when: compose_installed.rc == 0
+
+      - name: Получение последней версии Docker Compose
+        command: 'curl -s https://api.github.com/repos/docker/compose/releases/latest | grep ''tag_name'' | cut -d ''"'' -f 4'
+        register: compose_version
+        when: compose_installed.rc != 0
+
+      - name: Установка Docker Compose
+        get_url:
+            url: 'https://github.com/docker/compose/releases/download/{{ compose_version.stdout }}/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}'
+            dest: /usr/local/bin/docker-compose
+            mode: 'u+x'
+        when: compose_installed.rc != 0
+
+      - name: Удаление директории DevOps, если она существует
+        file:
+            path: '/home/projects/devops-lr'
+            state: absent
+
+      - name: Клонирование репозитория DevOps
+        git:
+            repo: 'https://github.com/vvadev/devops-lr.git'
+            dest: '/home/projects/devops-lr'

@@ -1,0 +1,2 @@
+[linux_servers]
+server ansible_host=194.87.56.114 ansible_user=root ansible_ssh_private_key_file=/var/lib/jenkins/.ssh/devops
